@@ -1,49 +1,46 @@
 package com.example.goodsapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.goodsapp.databinding.ActivityMainBinding
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import java.lang.reflect.Type
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    //private lateinit var adapter: ProductAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-        var recyclerView = binding.recyclerViewMain
+        var recyclerView: RecyclerView = binding.recyclerViewMain1
+
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         var products = fetchJson()
         recyclerView.adapter = ProductAdapter(products)
-
     }
 
-    fun fetchJson(): Goods {
-        val jsonText : String = applicationContext.assets // чтение goods из assets
+    fun fetchJson(): List<Product> {
+        val jsonText : String = applicationContext.assets // чтение goods.json из assets
             .open("goods")
             .bufferedReader().use {
                 it.readText()
             }
         val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build() // using moshi lib for json parcing
-        val jsonAdapter: JsonAdapter<Goods> = moshi.adapter(Goods::class.java)
-        val products = jsonAdapter.fromJson(jsonText)
+        val type: Type = Types.newParameterizedType(MutableList::class.java, Product::class.java)
+        val adapter = moshi.adapter<List<Product>>(type)
+        val products: List<Product>? = adapter.fromJson(jsonText)
+
         return products!!
     }
-
-
-
-
 }
 
 

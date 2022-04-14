@@ -2,10 +2,6 @@ package com.example.goodsapp
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import org.jetbrains.annotations.NotNull
-
-class Goods(val products: List<Product>){
-}
 
 @JsonClass(generateAdapter = true)
 data class Product(
